@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Friend Recommendation</title>
+</head>
+<body>
+    <h1>Recommended Users</h1>
+    {% if fofs %}
+        <ol>
+            {% for fof in fofs %}
+                <li>{{ fof.first_name }} {{ fof.last_name }} ({{ fof.email }})</li>
+            {% endfor %}
+        </ol>
+    {% else %}
+        <p>{{ message }}</p>
+    {% endif %}
+    <a href="{{ url_for('dashboard') }}" class="btn btn-primary">Go to Dashboard</a>
+</body>
+</html>

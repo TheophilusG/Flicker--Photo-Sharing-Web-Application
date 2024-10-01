@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Friends</title>
+</head>
+<body>
+    <h1>My Friends</h1>
+    <a href="{{ url_for('dashboard') }}" class="btn btn-primary">Go to Dashboard</a>
+    {% if friends %}
+        <ul>
+            {% for friend in friends %}
+                <li>{{ friend.first_name }} {{ friend.last_name }} ({{ friend.email }})</li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>{{ message }}</p>
+    {% endif %}
+</body>
+</html>

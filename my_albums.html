@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Albums</title>
+    <style>
+        .delete-btn {
+            background-color: #dc3545;
+            color: #fff;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin-bottom: 10px;
+        }
+        .delete-btn:hover {
+            background-color: #bd2130;
+        }
+    </style>
+</head>
+<body>
+    <h1>My Albums</h1>
+    <a href="{{ url_for('dashboard') }}">Back to Dashboard</a>
+    <div>
+        {% if albums %}
+            {% for album in albums %}
+                <ul>
+                    <li>
+                        <form action="/view_album/{{ album.album_id }}" method="post">
+                            <button type="submit">{{ album.name }}</button>
+                        </form>
+                        <button class="delete-btn" data-album-id="{{ album.album_id }}">Delete</button>
+                    </li>
+                </ul>
+            {% endfor %}
+        {% else %}
+            <p>No albums at the moment.</p>
+        {% endif %}
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var deleteButtons = document.querySelectorAll('.delete-btn');
+            deleteButtons.forEach(function(button) {
+                button.addEventListener('click', function() {
+                    var albumId = this.getAttribute('data-album-id');
+                    if (confirm("Are you sure you want to delete this album?")) {
+                        fetch('/delete_album/' + albumId, {
+                            method: 'POST'
+                        })
+                        .then(response => {
+                            if (response.ok) {
+                                location.reload(); // Refresh the page after deletion
+                            } else {
+                                console.error('Error deleting album:', response.statusText);
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error deleting album:', error);
+                        });
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

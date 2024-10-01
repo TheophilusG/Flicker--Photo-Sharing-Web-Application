@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Album</title>
+    <style>
+        img {
+            max-width: 300px; /* Adjust the maximum width as needed */
+            max-height: 300px; /* Adjust the maximum height as needed */
+            width: auto;
+            height: auto;
+        }
+        .like-btn {
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin-bottom: 10px;
+        }
+        .like-btn:hover {
+            background-color: #0056b3;
+        }
+        .like-count {
+            margin-right: 10px;
+        }
+        .delete-btn {
+            background-color: #dc3545;
+            color: #fff;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin-bottom: 10px;
+        }
+        .delete-btn:hover {
+            background-color: #bd2130;
+        }
+    </style>
+</head>
+<body>
+    <h1>Album {{ album_name }}</h1>
+    <a href="{{ url_for('dashboard') }}">Back to Dashboard</a>
+    <a href="{{ url_for('my_albums') }}">Back to My Albums</a>
+    <div>
+        {% if photos %}
+            {% for photo in photos %}
+                <div>
+                    <h3>{{ photo.caption }}</h3>
+                    <img src="data:image/jpeg;base64,{{ photo.data }}" alt="Photo">
+                    <div>
+                        <span class="like-count">{{ photo.like_count }}</span>
+                        <button class="like-btn" data-photo-id="{{ photo.photo_id }}">Like</button>
+                        <button class="delete-btn" data-photo-id="{{ photo.photo_id }}">Delete</button>
+                        <div class="liked-by">
+                            Liked by: {% for user in photo.liked_users %}{{ user }}{% if not loop.last %}, {% endif %}{% endfor %}
+                        </div>
+                    </div>
+                    <div>
+                        {% if photo.tags %}
+                            <h4>Tags:</h4>
+                            <ul>
+                                {% for tag in photo.tags %}
+                                    <li>{{tag.tag_text}}</li>
+                                {% endfor %}
+                            </ul>
+                        {% else %}
+                            <p>No tags.</p>
+                        {% endif %}
+                    </div>
+                    <form action="/rmv_photo/{{ photo.photo_id }}">
+                        <button type="submit">Delete Photo</button>
+                    </form>
+                    <div>
+                        {% if photo.comments %}
+                            <h4>Comments:</h4>
+                            <ul>
+                                {% for comment in photo.comments %}
+                                    <li>
+                                        {% if comment.owner_id %}
+                                            User ID: {{ comment.owner_id }} - {{ comment.text }}
+                                        {% else %}
+                                            Unregistered user: {{ comment.text }}
+                                        {% endif %}
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        {% else %}
+                            <p>No comments yet.</p>
+                        {% endif %}
+                    </div>
+                    <form action="/add_comment/{{ photo.photo_id }}/my" method="post">
+                        <label for="comment">Leave a Comment:</label><br>
+                        <textarea id="comment" name="comment" rows="4" cols="50"></textarea><br>
+                        {% if user %}
+                            <p>Comment by: {{ user.first_name }} {{ user.last_name }}</p>
+                        {% endif %}
+                        <button type="submit">Submit</button>
+                    </form>
+                </div>
+            {% endfor %}
+        {% else %}
+            <p>This album is empty.</p>
+        {% endif %}
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var likeButtons = document.querySelectorAll('.like-btn');
+            likeButtons.forEach(function(button) {
+                button.addEventListener('click', function() {
+                    var photoId = this.getAttribute('data-photo-id');
+                    var likeCountSpan = this.parentNode.querySelector('.like-count');
+                    var likedByDiv = this.parentNode.querySelector('.liked-by');
+
+                    // Simulated AJAX request to like the photo
+                    fetch('/add_like/' + photoId, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            // Update like count
+                            var likeCount = parseInt(likeCountSpan.textContent);
+                            likeCount++;
+                            likeCountSpan.textContent = likeCount;
+
+                            // Update liked by
+                            likedByDiv.textContent = "Liked by: " + data.liked_users.join(', ');
+                        } else {
+                            console.error('Error liking photo:', data.error);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error liking photo:', error);
+                    });
+                });
+            });
+
+            var deleteButtons = document.querySelectorAll('.delete-btn');
+            deleteButtons.forEach(function(button) {
+                button.addEventListener('click', function() {
+                    var photoId = this.getAttribute('data-photo-id');
+                    if (confirm("Are you sure you want to delete this photo?")) {
+                        fetch('/delete_photo/' + photoId, {
+                            method: 'POST'
+                        })
+                        .then(response => {
+                            if (response.ok) {
+                                location.reload(); // Refresh the page after deletion
+                            } else {
+                                console.error('Error deleting photo:', response.statusText);
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error deleting photo:', error);
+                        });
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search by Tag Result</title>
+    <style>
+        img {
+            max-width: 300px; /* Adjust the maximum width as needed */
+            max-height: 300px; /* Adjust the maximum height as needed */
+            width: auto;
+            height: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>Search by Tag Result</h1>
+    <a href="{{ url_for('search_by_tag') }}">Search by Tag</a>
+    <a href="{{ url_for('dashboard') }}" class="btn btn-primary">Go to Dashboard</a>
+    <h2>{{ message }}</h2>
+    {%if photos %}
+        {% for photo in photos %}
+            <div>
+                <h3>{{ photo.caption }}</h3>
+                <img src="data:image/jpeg;base64,{{ photo.data }}" alt="Photo">
+                <div>
+                    {% if photo.tags %}
+                        <h4>Tags:</h4>
+                        <ul>
+                            {% for tag in photo.tags %}
+                                <li>{{tag.tag_text}}</li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <p>No tags yet.</p>
+                    {% endif %}
+                </div>
+                <div>
+                    {% if photo.comments %}
+                        <h4>Comments:</h4>
+                        <ul>
+                            {% for comment in photo.comments %}
+                                <li>
+                                    {% if comment.owner_id %}
+                                        User ID: {{ comment.owner_id }} - {{ comment.text }}
+                                    {% else %}
+                                        Unregistered user: {{ comment.text }}
+                                    {% endif %}
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <p>No comments yet.</p>
+                    {% endif %}
+                </div>
+                <form action="/add_comment/{{ photo.photo_id }}" method="post">
+                    <label for="comment">Leave a Comment:</label><br>
+                    <textarea id="comment" name="comment" rows="4" cols="50"></textarea><br>
+                    {% if user %}
+                        <p>Comment by: {{ user.first_name }} {{ user.last_name }}</p>
+                    {% endif %}
+                    <button type="submit">Submit</button>
+                </form>
+            </div>
+        {% endfor %}
+    {% endif %}
+</body>
+</html>

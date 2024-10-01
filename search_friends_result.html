@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search Friends Result</title>
+</head>
+<body>
+    <h1>Search Friends Result</h1>
+    {% if user %}
+        <h2>User Found</h2>
+        <p>Name: {{ user.first_name }} {{ user.last_name }}</p>
+        <p>Email: {{ user.email }}</p>
+    {% else %}
+        <p>{{ message }}</p>
+    {% endif %}
+    <a href="{{ url_for('search_friends') }}">Search Again</a>
+    <a href="{{ url_for('add_friend') }}">Add a Friend</a>
+    <a href="{{ url_for('dashboard') }}" class="btn btn-primary">Go to Dashboard</a>
+</body>
+</html>

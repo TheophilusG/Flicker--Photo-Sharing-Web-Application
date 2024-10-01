@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Dashboard</title>
+</head>
+<body>
+    <h1>Welcome, {{ user.first_name }}!</h1>
+    <br>
+    <h2>Create an Album</h2>
+    <form action="/create_album" method="post" enctype="multipart/form-data">
+        <label for="album_name">Album Name:</label><br>
+        <input type="text" id="album_name" name="album_name" required><br>
+        <button type="submit">Create</button>
+    </form>
+    <br>
+    <h2>Upload your photos</h2>
+    <form action="/upload_photo" method="post" enctype="multipart/form-data">
+        <label for="photo">Select Photo:</label><br>
+        <input type="file" id="photo" name="photo" accept="image/*" required><br>
+        <label for="caption">Caption:</label><br>
+        <input type="text" id="caption" name="caption"><br>
+        <label for="album_name">Album Name (newly created if nonexistent):</label><br>
+        <input type="text" id="album_name" name="album_name" required><br>
+        <label for="tags">Tags (separated by spaces; case-insensitive):</label><br>
+        <input type="text" id="tags" name="tags"><br>
+        <button type="submit">Upload</button>
+    </form>
+    <br>
+    <br>
+    <h2>Top Contributors</h2>
+    {% if top_contributors %}
+        <ol>
+            {% for contributor in top_contributors %}
+                <li>{{ contributor.first_name }} {{ contributor.last_name }} - Contribution Score: {{ contributor.contribution_score }}</li>
+            {% endfor %}
+        </ol>
+    {% else %}
+        <p>No users ranked at the moment.</p>
+    {% endif %}
+    <h2>Popular Tags</h2>
+    {% if top_tags %}
+        <ol>
+            {% for tag_text in top_tags %}
+                <li>
+                    <form action="/view_by_tag/{{ tag_text }}/1" method="post">
+                        <button type="submit">{{ tag_text }}</button>
+                    </form>
+                </li>
+            {% endfor %}
+        </ol>
+    {% else %}
+        <p>No tags ranked at the moment.</p>
+    {% endif %}
+    <br>
+    <br>
+    <h2>Albums & Photos Menu</h2>
+    <a href="{{ url_for('my_albums') }}">My Albums</a>
+    <br>
+    <a href="{{ url_for('browse_photos') }}">Browse All Photos</a>
+    <br>
+    <a href="{{ url_for('view_by_tag_my') }}">Browse Photos by Tag</a>
+    <br>
+    <a href="{{ url_for('you_may_also_like') }}">Photos You May Also Like</a>
+    <br>
+    <br>
+    <h2>Friends Menu</h2>
+    <a href="{{ url_for('list_friends') }}">My Friends</a>
+    <br>
+    <a href="{{ url_for('search_friends') }}">Find a New Friend</a>
+    <br>
+    <a href="{{ url_for('add_friend') }}">Add a Friend</a>
+    <br>
+    <a href="{{ url_for('rmv_friend') }}">Remove a Friend</a>
+    <br>
+    <a href="{{ url_for('rec_friends') }}">Friend Recommendation</a>
+    <br>
+    <br>
+    <h2>Back to Home Page</h2>
+    <a href="{{ url_for('index') }}">Back to Home Page</a>
+</body>
+</html>

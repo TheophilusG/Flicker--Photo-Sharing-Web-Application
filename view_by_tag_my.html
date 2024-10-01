@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View My Photos by Tag</title>
+</head>
+<body>
+    <h1>View My Photos by Tag</h1>
+    <div>
+        <a href="{{ url_for('dashboard') }}" class="btn btn-primary">Go to Dashboard</a>
+    </div>
+    <div>
+        <a href="{{ url_for('view_by_tag_all') }}">View All Photos by Tag</a>
+    </div>
+    <h2>All Tags</h2>
+    <ul>
+        {% for tag in tags %}
+            <li>
+                <form action="/view_by_tag/{{ tag.tag_text }}/0" method="post">
+                    <button type="submit">{{ tag.tag_text }}</button>
+                </form>
+            </li>
+        {% endfor %}
+    </ul>
+</body>
+</html>
